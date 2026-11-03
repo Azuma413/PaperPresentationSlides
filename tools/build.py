@@ -189,11 +189,11 @@ def add_text(slide, x, y, w, h, lines, size=18, color=None, bold=False, align=No
 # highlights: substrings rendered bold red, per slide number
 HIGHLIGHT = {
     2: ['99%'],
-    11: ['+17 / +21 / +40%'],
-    18: ['76.7% → 88.3%'],
-    19: ['本手法 90%'],
-    25: ['23.7% → 36.8%'],
-    26: ['50% → 69%'],
+    12: ['+17 / +21 / +40%'],
+    21: ['76.7% → 88.3%'],
+    23: ['本手法 90%'],
+    30: ['23.7% → 36.8%'],
+    32: ['50% → 69%'],
 }
 
 
@@ -242,6 +242,41 @@ def add_picture(slide, name, x, y, w=None, h=None, folder=FIG):
 
 def add_eq(slide, name, x, y, w):
     return add_picture(slide, name, x, y, w=w, folder=EQ)
+
+
+VID = S + '/videos/ready/'
+
+
+def add_video(slide, name, x, y, w, caption_text=None, border=True):
+    from PIL import Image
+    poster = VID + name + '.jpg'
+    iw, ih = Image.open(poster).size
+    h = w * ih / iw
+    mv = slide.shapes.add_movie(VID + name + '.mp4', inch(x), inch(y), inch(w), inch(h),
+                                poster_frame_image=poster, mime_type='video/mp4')
+    if border:
+        mv.line.color.rgb = RGBColor.from_string('7F7F7F'); mv.line.width = Pt(0.75)
+    if caption_text:
+        add_text(slide, x, y + h + 0.05, w, 0.4, [caption_text], size=13, align=PP_ALIGN.CENTER, color=NAVY)
+    return mv
+
+
+def video_row(slide, items, y, total_w=12.3, x0=0.5, gap=0.3, max_h=None):
+    """items: list of (name, caption). Lay videos in a row with equal height."""
+    from PIL import Image
+    ars = []
+    for name, _ in items:
+        iw, ih = Image.open(VID + name + '.jpg').size
+        ars.append(iw / ih)
+    h = (total_w - gap * (len(items) - 1)) / sum(ars)
+    if max_h and h > max_h:
+        h = max_h
+    ws = [a * h for a in ars]
+    x = x0 + (total_w - sum(ws) - gap * (len(items) - 1)) / 2
+    for (name, cap), w in zip(items, ws):
+        add_video(slide, name, x, y, w, caption_text=cap)
+        x += w + gap
+    return h
 
 
 def add_box(slide, x, y, w, h, text, fill=BLUE_F, line=BLUE_L, size=16, bold=True, color='000000',
@@ -416,15 +451,19 @@ s = content_slide(CAT1, 7)
 add_picture(s, 'sf_fig1', 1.65, 3.1, w=10.0)
 caption(s, 1.65, 6.95, 8, 'Fig. 1 in Ranawaka et al., 2026')
 
-s = content_slide(CAT1, 8)
+s = content_slide(CAT1, 8, size=22)
+video_row(s, [('sf_dining', '家のダイニング：実世界 → 複製シーン'), ('sf_toys', 'おもちゃの机：実世界 → 複製シーン')], 3.4, total_w=11.0, x0=1.15, gap=0.6)
+caption(s, 0.5, 7.0, 12, 'Videos from github.com/NVlabs/SimFoundry (docs/gallery)')
+
+s = content_slide(CAT1, 9)
 add_picture(s, 'sf_fig2_top', 0.5, 3.45, w=12.3)
 caption(s, 0.5, 6.85, 8, 'Fig. 2 (top) in Ranawaka et al., 2026')
 
-s = content_slide(CAT1, 9)
+s = content_slide(CAT1, 10)
 add_picture(s, 'sf_fig2_bot', 0.5, 3.45, w=12.3)
 caption(s, 0.5, 6.85, 8, 'Fig. 2 (bottom) in Ranawaka et al., 2026')
 
-s = content_slide(CAT1, 10)
+s = content_slide(CAT1, 11)
 add_picture(s, 'sf_tasks', 1.4, 3.3, h=3.5)
 add_picture(s, 'sf_scatter', 5.3, 3.3, h=3.5)
 add_box(s, 9.2, 3.5, 3.7, 1.5, '', fill=BLUE_F, line=BLUE_L,
@@ -437,22 +476,26 @@ add_box(s, 9.2, 5.2, 3.7, 1.5, '', fill=BLUE_F, line=BLUE_L,
                ('opt', ['π0.5 は言語の追従に強い'], dict(size=14, bold=False))])
 caption(s, 1.4, 6.85, 8, 'Fig. 4 in Ranawaka et al., 2026')
 
-s = content_slide(CAT1, 11)
+s = content_slide(CAT1, 12)
 add_picture(s, 'sf_fig5', 0.5, 3.55, w=12.3)
 caption(s, 0.5, 6.5, 12, 'Fig. 5 in Ranawaka et al., 2026   A: 物体の変種は未知の物体に効く   B: 配置の変種は新しい配置に効く   C: 関連タスクのデモが目標タスクを押し上げる', size=12)
 
-s = content_slide(CAT1, 12)
+s = content_slide(CAT1, 13, size=22)
+video_row(s, [('sf_yam_sim', 'Sim で学習（YAM、両腕）'), ('sf_yam_real', '同じポリシーを実機で実行'), ('sf_yam_cousin', '未知の物体で実行')], 3.5, gap=0.35)
+caption(s, 0.5, 6.9, 12, 'Videos from github.com/NVlabs/SimFoundry (docs/gallery): YAM simulated / real / unseen-object evaluation')
+
+s = content_slide(CAT1, 14)
 add_picture(s, 'sf_fig3', 0.5, 3.4, w=12.3)
 caption(s, 0.5, 6.78, 12, 'Fig. 3 in Ranawaka et al., 2026   上：実世界   中：Digital Twin   下：Digital Cousin', size=12)
 
 # ================================================================== 13 papers (#2) + CaM 14-19
 papers_slide(1)
 
-s = content_slide(CAT2, 14)
+s = content_slide(CAT2, 16)
 add_picture(s, 'cam_fig1', 1.5, 3.3, w=10.3)
 caption(s, 1.5, 7.05, 8, 'Fig. 1 in Zhou et al., 2025')
 
-s = content_slide(CAT2, 15)
+s = content_slide(CAT2, 17)
 add_picture(s, 'cam_fig2', 0.5, 3.45, w=8.3)
 add_eq(s, 'cam_gen', 9.0, 3.6, 4.0)
 add_box(s, 9.0, 4.3, 4.0, 1.2, '', fill=ORANGE_F, line=ORANGE_L, align=PP_ALIGN.LEFT,
@@ -463,13 +506,13 @@ add_box(s, 9.0, 5.6, 4.0, 1.2, '', fill=BLUE_F, line=BLUE_L, align=PP_ALIGN.LEFT
                ('opt', ['鍋がコンロの真上にある'], dict(size=13, bold=False))])
 caption(s, 0.5, 7.0, 8, 'Fig. 2, Eq. (1) in Zhou et al., 2025')
 
-s = content_slide(CAT2, 16)
+s = content_slide(CAT2, 18)
 add_picture(s, 'cam_fig3', 0.5, 3.45, w=12.3)
 add_text(s, 0.6, 6.15, 1.4, 0.4, [[('ConSeg:', dict(bold=True))]], size=16, color=NAVY)
 add_eq(s, 'cam_seg', 2.0, 6.17, 7.4)
 caption(s, 9.6, 6.25, 3.5, 'Fig. 3, Eq. (2) in Zhou et al., 2025')
 
-s = content_slide(CAT2, 17)
+s = content_slide(CAT2, 19)
 add_picture(s, 'cam_code', 0.5, 3.5, w=8.3)
 flow = [('サブゴールの開始時に VLM を1回呼ぶ', ORANGE_F, ORANGE_L), ('要素を追跡する（CoTracker）', BLUE_F, BLUE_L),
         ('コードを毎フレーム評価する', GREEN_F, GREEN_L), ('False なら停止し、理由を付けて再計画', PINK_F, PINK_L)]
@@ -479,13 +522,21 @@ for i, (t, f, l) in enumerate(flow):
         add_arrow(s, 10.95, 3.5 + i * 0.85 + 0.6, 0.3, 0.25, shape=MSO_SHAPE.DOWN_ARROW, fill='BFBFBF', line='7F7F7F')
 caption(s, 0.5, 6.75, 8, 'Monitor code example from Fig. 2 in Zhou et al., 2025')
 
-s = content_slide(CAT2, 18)
+s = content_slide(CAT2, 20, size=22)
+video_row(s, [('cam_stack_ours', '積み木積み：本手法'), ('cam_stack_doremi', '積み木積み：DoReMi'), ('cam_sweep', 'ブロックの半分だけ掃く'), ('cam_pour', 'お茶注ぎ（面の傾き）')], 3.5, gap=0.25)
+caption(s, 0.5, 6.95, 12, 'Videos from zhoues.github.io/Code-as-Monitor (CLIPort / OmniGibson demos)')
+
+s = content_slide(CAT2, 21)
 add_picture(s, 'cam_tab2', 0.5, 3.45, w=12.3)
 add_picture(s, 'cam_tab1', 0.5, 5.0, w=5.4)
 add_picture(s, 'cam_tab9', 6.3, 5.3, w=6.5)
 caption(s, 0.5, 6.85, 12, 'Table 1, 2, 9 in Zhou et al., 2025（DRM: DoReMi, IM: Inner Monologue）')
 
-s = content_slide(CAT2, 19)
+s = content_slide(CAT2, 22, size=22)
+video_row(s, [('cam_real_clear', '動物以外を片付ける（2倍速）'), ('cam_real_grasp', '果物に近い順に動物を掴む')], 3.3, total_w=6.0, x0=3.65, gap=0.6, max_h=3.1)
+caption(s, 0.5, 7.0, 12, 'Videos from zhoues.github.io/Code-as-Monitor (real-world demos, UR5 + Leap Hand)')
+
+s = content_slide(CAT2, 23)
 add_picture(s, 'cam_fig5', 0.5, 3.45, w=12.3)
 add_picture(s, 'cam_tab4', 0.5, 5.75, w=5.2)
 add_picture(s, 'cam_tab6', 6.3, 5.75, w=5.0)
@@ -495,11 +546,11 @@ caption(s, 0.5, 7.05, 12, 'Fig. 5, Table 4, Table 6 in Zhou et al., 2025')
 # ================================================================== 20 papers (#3) + VLS 21-26
 papers_slide(2)
 
-s = content_slide(CAT3, 21)
+s = content_slide(CAT3, 25)
 add_picture(s, 'vls_fig1', 2.0, 3.35, w=9.3)
 caption(s, 2.0, 7.0, 8, 'Fig. 1 in Liu et al., 2026')
 
-s = content_slide(CAT3, 22)
+s = content_slide(CAT3, 26)
 add_eq(s, 'vls_guid', 0.9, 3.4, 7.6)
 add_eq(s, 'vls_surr', 0.9, 4.0, 5.6)
 rows = [
@@ -521,7 +572,7 @@ for i, row in enumerate(rows):
         c.fill.fore_color.rgb = RGBColor.from_string(NAVY if i == 0 else (GREEN_F if i == len(rows) - 1 else ('F2F2F2' if i % 2 else 'FFFFFF')))
 caption(s, 8.7, 3.45, 4.5, 'Eq. (5), (6), (7) in Liu et al., 2026', size=11)
 
-s = content_slide(CAT3, 23)
+s = content_slide(CAT3, 27)
 add_picture(s, 'vls_fig2', 0.5, 3.45, w=7.6)
 add_box(s, 8.5, 3.5, 4.4, 1.55, '', fill=YELLOW_F, line=YELLOW_L, align=PP_ALIGN.LEFT,
         lines=[('opt', ['報酬関数の例（VLM の出力）'], dict(size=15, bold=True)),
@@ -532,14 +583,18 @@ add_box(s, 8.5, 5.2, 4.4, 1.55, '', fill=GREEN_F, line=GREEN_L, align=PP_ALIGN.L
                ('opt', ['VLM を呼ぶのは報酬の生成と段階切り替えの判断だけ。勾配は生成された関数を通して行動へ逆伝播する'], dict(size=13, bold=False))])
 caption(s, 0.5, 7.0, 8, 'Fig. 2 in Liu et al., 2026')
 
-s = content_slide(CAT3, 24)
+s = content_slide(CAT3, 28)
 add_picture(s, 'vls_loop', 0.5, 3.4, w=12.3)
 for lab, eqn, x, w in [('候補を引き離す斥力（RBF）', 'vls_rbf', 0.5, 3.9), ('報酬で重み付けした選別（FK）', 'vls_fk', 4.7, 4.2), ('誘導の強さの調整', 'vls_lam', 9.2, 3.5)]:
     add_text(s, x, 5.45, w, 0.35, [lab], size=14, bold=True, color=NAVY)
     add_eq(s, eqn, x, 5.85, w)
 caption(s, 0.5, 7.0, 12, 'Fig. 2 (bottom), Eq. (8)–(10) in Liu et al., 2026')
 
-s = content_slide(CAT3, 25)
+s = content_slide(CAT3, 29, size=22)
+video_row(s, [('vls_libero_base', 'LIBERO-PRO：π0.5（失敗）'), ('vls_libero_vls', 'LIBERO-PRO：+VLS（成功）'), ('vls_coll_base', '壁を避ける：ベース（失敗）'), ('vls_coll_vls', '壁を避ける：+VLS（成功）')], 3.5, gap=0.25)
+caption(s, 0.5, 6.95, 12, 'Videos from vision-language-steering.github.io (LIBERO-PRO position perturbation, collision avoidance)')
+
+s = content_slide(CAT3, 30)
 add_picture(s, 'vls_tab1', 0.5, 3.5, w=7.4)
 add_picture(s, 'vls_fig3', 0.5, 5.1, w=7.4)
 add_picture(s, 'vls_abl', 8.2, 3.5, w=4.8)
@@ -547,13 +602,17 @@ add_picture(s, 'vls_scale', 8.2, 5.1, w=4.8)
 caption(s, 0.5, 6.95, 7, 'Table I, Fig. 3 in Liu et al., 2026')
 caption(s, 8.2, 6.5, 4.8, 'Fig. 4 in Liu et al., 2026（左：Ablation、右：サンプル数のスケーリング）')
 
-s = content_slide(CAT3, 26)
+s = content_slide(CAT3, 31, size=22)
+video_row(s, [('vls_real_banana', '同じ条件：バナナを緑の皿に'), ('vls_real_mug', '未知の物体：マグを皿に'), ('vls_real_pos', '皿の位置を入れ替え')], 3.5, gap=0.3)
+caption(s, 0.5, 6.9, 12, 'Videos from vision-language-steering.github.io (real-world Franka rollouts)')
+
+s = content_slide(CAT3, 32)
 add_picture(s, 'vls_fig5', 0.5, 3.45, w=12.3)
 caption(s, 0.5, 7.0, 8, 'Fig. 5 in Liu et al., 2026')
 
 # ================================================================== 27 insights
-s = new_slide('Insights', slide_title(27))
-add_bullets(s, 27, size=20, spacing=130)
+s = new_slide('Insights', slide_title(33))
+add_bullets(s, 33, size=20, spacing=130)
 boxes2 = [(0.9, BLUE_F, BLUE_L, '① Real2Sim', 'SimFoundry', 'VLM の空間理解で Sim を作る'),
           (5.0, ORANGE_F, ORANGE_L, '② 失敗検出', 'Code-as-Monitor', 'VLM が書いたコードで監視する'),
           (9.1, GREEN_F, GREEN_L, '③ 推論時の誘導', 'VLS', 'VLM が書いた報酬で誘導する')]
