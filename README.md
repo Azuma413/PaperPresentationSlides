@@ -1,0 +1,12 @@
+## 目的
+papersに格納されている3本の論文の紹介スライドを英語で作ります．
+紹介スライドの内容をpdf2枚程度のresumeにまとめます．
+
+- 紹介スライドは20261105_KaneyoshiHiratsuka_SurveySlide.pptxに作成してください．
+- 紹介スライドはまず日本語で作成してください．ユーザーの承認を得た後で英語に翻訳します．
+- 紹介スライドは，最終的に英語に翻訳することを見越した文量にしてください．
+- 文章よりは図で分かりやすく説明することを心掛けてください．
+- 雑なブロック線図を乱用しないでください．
+- スライド作成時に 参考用\20260514_KaneyoshiHiratsuka_SurveySlide_A_Survey_of_Recent_Advances_in_Vision-Language-Action_Models_v2.pptx を参照してください．文字サイズやスライドのフォーマットを維持してください．
+- resume作成時には 参考用\20260514_KaneyoshiHiratsuka_SurveyResume_A_Survey_of_Recent_Advances_in_Vision-Language-Action_Models.pdf を参照してください．
+- 論文の引用は.bibファイルを作成し，arxivなどから正確に引用情報を取得するようにしてください．
