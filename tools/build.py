@@ -191,7 +191,7 @@ HIGHLIGHT = {
     2: ['99%'],
     11: ['+17 / +21 / +40%'],
     18: ['76.7% → 88.3%'],
-    19: ['CaM 90%'],
+    19: ['本手法 90%'],
     25: ['23.7% → 36.8%'],
     26: ['50% → 69%'],
 }
@@ -204,7 +204,7 @@ def rich_bullet(text, n):
     m = re.match(r'^([^：。]{1,22})：', text)
     if m and not has_jp(m.group(1)[:1]) or (m and m.group(1) in ('多様化は RBF の斥力、精緻化は報酬の勾配を MCMC 風に複数回注入',)):
         pass
-    if m and (not has_jp(m.group(1)) or m.group(1) in ('私見',)):
+    if m and (not has_jp(m.group(1)) or m.group(1) in ('私見', '切り出し', '生成', '物体の変種', '配置の変種', 'タスクの変種', '制約', '事後検知（Reactive）', '事前予防（Proactive）', '① キーポイント抽出', '② 報酬生成', '③ 誘導付き生成')):
         segs.append((m.group(1), dict(bold=True)))
         rest = text[len(m.group(1)):]
     for h in HIGHLIGHT.get(n, []):
@@ -382,9 +382,9 @@ s = content_slide('Background', 3, size=20)
 add_box(s, 0.6, 3.55, 12.1, 0.55, '', fill=PURPLE_F, line=PURPLE_L,
         lines=[('opt', ['VLM（空間理解 ・ 推論 ・ コード生成）'], dict(size=18, bold=True))])
 areas = [
-    (0.6, BLUE_F, BLUE_L, '① Real2Sim', 'SimFoundry', '動画から Sim シーンを再構成し、評価と学習データを作る'),
-    (4.85, ORANGE_F, ORANGE_L, '② 失敗検出', 'Code-as-Monitor', '監視コードで実行中の失敗を検知し、予防する'),
-    (9.1, GREEN_F, GREEN_L, '③ Steering', 'VLS', '報酬関数で学習済みポリシーの行動生成を誘導する'),
+    (0.6, BLUE_F, BLUE_L, '① Real2Sim', 'SimFoundry', '動画から Sim を作り、評価と学習データに使う'),
+    (4.85, ORANGE_F, ORANGE_L, '② 失敗検出', 'Code-as-Monitor', '監視コードで実行中の失敗を検知し予防する'),
+    (9.1, GREEN_F, GREEN_L, '③ 推論時の誘導', 'VLS', '報酬関数でポリシーの行動生成を誘導する'),
 ]
 for x, f, l, head, name, sub in areas:
     add_arrow(s, x + 1.6, 4.13, 0.4, 0.3, shape=MSO_SHAPE.DOWN_ARROW, fill='BFBFBF', line='7F7F7F')
@@ -456,10 +456,10 @@ s = content_slide(CAT2, 15)
 add_picture(s, 'cam_fig2', 0.5, 3.45, w=8.3)
 add_eq(s, 'cam_gen', 9.0, 3.6, 4.0)
 add_box(s, 9.0, 4.3, 4.0, 1.2, '', fill=ORANGE_F, line=ORANGE_L, align=PP_ALIGN.LEFT,
-        lines=[('opt', ['Proactive = 実行中に保つ制約 ', ('C', dict(italic=True)), ('d', dict(size=12))], dict(size=14, bold=True)),
+        lines=[('opt', ['事前予防 = 実行中に保つ制約 ', ('C', dict(italic=True)), ('d', dict(size=12))], dict(size=14, bold=True)),
                ('opt', ['鍋の把持を保つ、パンは鍋の中、鍋は水平'], dict(size=13, bold=False))])
 add_box(s, 9.0, 5.6, 4.0, 1.2, '', fill=BLUE_F, line=BLUE_L, align=PP_ALIGN.LEFT,
-        lines=[('opt', ['Reactive = 完了時に満たす制約 ', ('C', dict(italic=True)), ('u', dict(size=12))], dict(size=14, bold=True)),
+        lines=[('opt', ['事後検知 = 完了時に満たす制約 ', ('C', dict(italic=True)), ('u', dict(size=12))], dict(size=14, bold=True)),
                ('opt', ['鍋がコンロの真上にある'], dict(size=13, bold=False))])
 caption(s, 0.5, 7.0, 8, 'Fig. 2, Eq. (1) in Zhou et al., 2025')
 
@@ -534,7 +534,7 @@ caption(s, 0.5, 7.0, 8, 'Fig. 2 in Liu et al., 2026')
 
 s = content_slide(CAT3, 24)
 add_picture(s, 'vls_loop', 0.5, 3.4, w=12.3)
-for lab, eqn, x, w in [('多様化（RBF の斥力）', 'vls_rbf', 0.5, 3.9), ('再サンプリング（FK の重み）', 'vls_fk', 4.7, 4.2), ('誘導の強さの適応', 'vls_lam', 9.2, 3.5)]:
+for lab, eqn, x, w in [('候補を引き離す斥力（RBF）', 'vls_rbf', 0.5, 3.9), ('報酬で重み付けした選別（FK）', 'vls_fk', 4.7, 4.2), ('誘導の強さの調整', 'vls_lam', 9.2, 3.5)]:
     add_text(s, x, 5.45, w, 0.35, [lab], size=14, bold=True, color=NAVY)
     add_eq(s, eqn, x, 5.85, w)
 caption(s, 0.5, 7.0, 12, 'Fig. 2 (bottom), Eq. (8)–(10) in Liu et al., 2026')
@@ -556,7 +556,7 @@ s = new_slide('Insights', slide_title(27))
 add_bullets(s, 27, size=20, spacing=130)
 boxes2 = [(0.9, BLUE_F, BLUE_L, '① Real2Sim', 'SimFoundry', 'VLM の空間理解で Sim を作る'),
           (5.0, ORANGE_F, ORANGE_L, '② 失敗検出', 'Code-as-Monitor', 'VLM が書いたコードで監視する'),
-          (9.1, GREEN_F, GREEN_L, '③ Steering', 'VLS', 'VLM が書いた報酬で誘導する')]
+          (9.1, GREEN_F, GREEN_L, '③ 推論時の誘導', 'VLS', 'VLM が書いた報酬で誘導する')]
 for x, f, l, head, name, sub in boxes2:
     add_box(s, x, 5.55, 3.4, 1.0, '', fill=f, line=l,
             lines=[('opt', [head + '  ', (name, dict(color=NAVY))], dict(size=16, bold=True)), ('opt', [sub], dict(size=13, bold=False))])
