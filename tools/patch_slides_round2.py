@@ -129,7 +129,7 @@ CITES = [
     ('DoReMi (先行研究)', 'DoReMi [Guo+ 2023]'),
     ('DoReMi 0%', 'DoReMi [Guo+ 2023] 0%'),
     ('LIBERO-PRO は指示・配置を学習時から変更。CALVIN は物体の位置が毎回変わる', 'LIBERO-PRO [Zhou+ 2025] と CALVIN [Mees+ 2022]。学習時と条件を変えて評価'),
-    ('DynaGuide や ITPS', 'DynaGuide [Du+ 2025] や ITPS [Wang+ 2024]'),
+    ('CALVIN：可動物体 94%、関節物体 87%。DynaGuide や ITPS より 15〜25 pt 高い', 'CALVIN：可動物体 94%、関節物体 87%（DynaGuide [Du+ 2025] などより +15〜25 pt）'),
     ('動画は LIBERO での例', '動画は LIBERO [Liu+ 2023] での例'),
     # Digital Cousins
     ('複製 ＋ 物体・配置・タスクの変種', 'Twin ＋ 物体・配置・タスクの Cousins'),
