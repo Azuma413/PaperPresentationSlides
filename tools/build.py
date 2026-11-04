@@ -594,7 +594,7 @@ positioning(s, 1, [
 
 s = content_slide(CAT2, 17, size=22)
 add_picture(s, f'cam_compare_{LANG}.png', 0.9, 3.5, w=11.5, folder=S + '/diag/')
-caption(s, 0.9, 6.85, 11, t('概念図（発表者作成）。Inner Monologue と DoReMi は論文の比較手法', 'Schematic by the presenter. Inner Monologue and DoReMi are the baselines in the paper'))
+caption(s, 0.9, 6.85, 11, t('Inner Monologue と DoReMi は論文の比較手法', 'Inner Monologue and DoReMi are the baselines in the paper'))
 
 s = content_slide(CAT2, 18, size=20)
 step_row(s, [
@@ -660,7 +660,6 @@ positioning(s, 2, [
 
 s = content_slide(CAT3, 27, size=22)
 add_picture(s, f'vls_compare_{LANG}.png', 0.8, 3.45, w=11.7, folder=S + '/diag/')
-caption(s, 0.8, 6.85, 11, t('概念図（発表者作成）。1次元の行動に単純化している', 'Schematic by the presenter, simplified to a one-dimensional action'))
 
 s = content_slide(CAT3, 28, size=20)
 step_row(s, [
