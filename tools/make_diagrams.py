@@ -78,7 +78,7 @@ def vls_compare(lang):
         ax.set_xlim(0,10); ax.set_ylim(0,1.2); ax.set_yticks([]); ax.set_xticks([])
         for sp in ['top','right','left']: ax.spines[sp].set_visible(False)
     axes[0].legend(loc='upper left',fontsize=8,frameon=False)
-    axes[1].set_xlabel(t['xlabel'],fontsize=9,labelpad=18)
+    fig.text(0.5,-0.02,t['xlabel'],ha='center',fontsize=9,color='#555555')
     fig.tight_layout()
     fig.savefig(f'diag/vls_compare_{lang}.png',bbox_inches='tight',facecolor='white'); plt.close(fig)
 

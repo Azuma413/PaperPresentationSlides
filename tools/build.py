@@ -197,27 +197,25 @@ def add_text(slide, x, y, w, h, lines, size=18, color=None, bold=False, align=No
 HIGHLIGHT = {
     2: ['99%'],
     13: ['+17 / +21 / +40%'],
-    22: ['76.7% → 88.3%'],
-    24: [t('本手法 90%', 'CaM 90%')],
-    32: ['23.7% → 36.8%'],
-    34: ['50% → 69%'],
+    23: ['76.7% → 88.3%'],
+    25: [t('本手法 90%', 'CaM 90%')],
+    34: ['23.7% → 36.8%'],
+    36: ['50% → 69%'],
 }
 
 
 def rich_bullet(text, n):
-    """Split a bullet into runs: bold leading label (before the first '：'), red highlights."""
+    """Bold a short leading label (before the first colon), red highlights."""
     segs = []
     rest = text
-    m = re.match(r'^([^：。]{1,22})：', text) or (LANG == 'en' and re.match(r'^([A-Za-z0-9①②③ ./+\-()]{1,28}):', text))
-    if m and not has_jp(m.group(1)[:1]) or (m and m.group(1) in ('多様化は RBF の斥力、精緻化は報酬の勾配を MCMC 風に複数回注入',)):
-        pass
-    if m and (LANG == 'en' or not has_jp(m.group(1)) or m.group(1) in ('私見', '切り出し', '生成', '物体の変種', '配置の変種', 'タスクの変種', '制約', '事後検知（Reactive）', '事前予防（Proactive）', '① キーポイント抽出', '② 報酬生成', '③ 誘導付き生成')):
+    m = re.match(r'^([^：。]{1,24})：', text) or (LANG == 'en' and re.match(r'^([^:.]{1,30}):', text))
+    if m:
         segs.append((m.group(1), dict(bold=True)))
         rest = text[len(m.group(1)):]
-    for h in HIGHLIGHT.get(n, []):
-        if h in rest:
-            a, b = rest.split(h, 1)
-            segs.append(a); segs.append((h, dict(bold=True, color=RED))); rest = b
+    for hl in HIGHLIGHT.get(n, []):
+        if hl in rest:
+            a, b = rest.split(hl, 1)
+            segs.append(a); segs.append((hl, dict(bold=True, color=RED))); rest = b
     segs.append(rest)
     return segs
 
@@ -339,22 +337,21 @@ def positioning(slide, active, rows, y=3.55):
     for i, (f, l, head, name) in enumerate(areas):
         x = L + i * (bw + 0.2)
         on = (i == active)
-        add_arrow(slide, x + bw / 2 - 0.15, y + 0.55, 0.3, 0.25, shape=MSO_SHAPE.DOWN_ARROW, fill='BFBFBF' if not on else '7F7F7F', line='7F7F7F')
-        box = add_box(slide, x, y + 0.85, bw, 1.0, '', fill=f if on else 'F2F2F2', line=l if on else 'BFBFBF',
+        col = '7F7F7F' if on else 'BFBFBF'
+        add_arrow(slide, x + bw / 2 - 0.15, y + 0.52, 0.3, 0.38, shape=MSO_SHAPE.DOWN_ARROW, fill=col, line='7F7F7F')
+        box = add_box(slide, x, y + 0.95, bw, 1.0, '', fill=f if on else 'F2F2F2', line=l if on else 'BFBFBF',
                       lines=[('opt', [head], dict(size=14, bold=True, color='000000' if on else 'A6A6A6')),
                              ('opt', [name], dict(size=13, bold=True, color=NAVY if on else 'A6A6A6'))])
         if on:
             box.line.width = Pt(2.5)
-        add_arrow(slide, x + bw / 2 - 0.15, y + 1.9, 0.3, 0.25, shape=MSO_SHAPE.UP_DOWN_ARROW, fill='BFBFBF' if not on else '7F7F7F', line='7F7F7F')
-    add_box(slide, L, y + 2.2, W, 0.5, t('学習済みポリシー', 'Pretrained policy'), fill=GRAY_F, line=GRAY_L, size=14)
-    # right: fact rows
-    RX = 7.3; RW = 5.7; rh = 0.66
+        add_arrow(slide, x + bw / 2 - 0.15, y + 2.0, 0.3, 0.5, shape=MSO_SHAPE.UP_DOWN_ARROW, fill=col, line='7F7F7F')
+    add_box(slide, L, y + 2.55, W, 0.5, t('学習済みポリシー', 'Pretrained policy'), fill=GRAY_F, line=GRAY_L, size=14)
+    RX = 7.3; RW = 5.7; rh = 0.68
     for i, (k, v) in enumerate(rows):
-        yy = y + i * (rh + 0.08)
-        add_box(slide, RX, yy, 1.55, rh, k, fill=[BLUE_F, ORANGE_F, GREEN_F][active], line=[BLUE_L, ORANGE_L, GREEN_L][active], size=13)
-        add_box(slide, RX + 1.65, yy, RW - 1.65, rh, '', fill='FFFFFF', line='BFBFBF', align=PP_ALIGN.LEFT,
+        yy = y + i * (rh + 0.1)
+        add_box(slide, RX, yy, 1.7, rh, k, fill=[BLUE_F, ORANGE_F, GREEN_F][active], line=[BLUE_L, ORANGE_L, GREEN_L][active], size=13)
+        add_box(slide, RX + 1.8, yy, RW - 1.8, rh, '', fill='FFFFFF', line='BFBFBF', align=PP_ALIGN.LEFT,
                 lines=[('opt', [v], dict(size=12, bold=False))], margin=0.08)
-
 
 def add_box(slide, x, y, w, h, text, fill=BLUE_F, line=BLUE_L, size=16, bold=True, color='000000',
             shape=MSO_SHAPE.ROUNDED_RECTANGLE, align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE, lines=None,
@@ -494,7 +491,7 @@ caption(s, 6.6, 6.82, 5.9, 'ASPIRE success vs. API cost on 10 LIBERO-Pro tasks (
 
 # ================================================================== 3 background: three areas
 s = content_slide('Background', 3, size=20)
-add_box(s, 0.6, 3.55, 12.1, 0.55, t('VLM（空間理解 ・ 推論 ・ コード生成）', 'VLM (spatial understanding, reasoning, code generation)'),
+add_box(s, 0.6, 3.5, 12.1, 0.55, t('VLM（空間理解 ・ 推論 ・ コード生成）', 'VLM (spatial understanding, reasoning, code generation)'),
         fill=PURPLE_F, line=PURPLE_L, size=18)
 areas = [
     (0.6, BLUE_F, BLUE_L, '① Real2Sim', 'SimFoundry', t('動画から Sim を作り、評価と学習データに使う', 'Build a sim from a video; use it for evaluation and training data')),
@@ -502,60 +499,71 @@ areas = [
     (9.1, GREEN_F, GREEN_L, t('③ 推論時の誘導', '③ Inference-time steering'), 'VLS', t('報酬関数でポリシーの行動生成を誘導する', 'Steer the policy\'s action generation with reward functions')),
 ]
 for x, f, l, head, name, sub in areas:
-    add_arrow(s, x + 1.6, 4.13, 0.4, 0.3, shape=MSO_SHAPE.DOWN_ARROW, fill='BFBFBF', line='7F7F7F')
-    add_box(s, x, 4.47, 3.6, 1.45, '', fill=f, line=l,
+    add_arrow(s, x + 1.65, 4.08, 0.3, 0.38, shape=MSO_SHAPE.DOWN_ARROW, fill='BFBFBF', line='7F7F7F')
+    add_box(s, x, 4.5, 3.6, 1.4, '', fill=f, line=l,
             lines=[('opt', [head], dict(size=18, bold=True)),
                    ('opt', [name], dict(size=16, bold=True, color=NAVY)),
                    ('opt', [sub], dict(size=13, bold=False))])
-    add_arrow(s, x + 1.6, 5.95, 0.4, 0.3, shape=MSO_SHAPE.UP_DOWN_ARROW, fill='BFBFBF', line='7F7F7F')
-add_box(s, 0.6, 6.3, 12.1, 0.58, t('学習済みポリシー（π0.5 / Diffusion Policy / GR00T …）', 'Pretrained policy (π0.5 / Diffusion Policy / GR00T …)'),
+    add_arrow(s, x + 1.65, 5.93, 0.3, 0.5, shape=MSO_SHAPE.UP_DOWN_ARROW, fill='BFBFBF', line='7F7F7F')
+add_box(s, 0.6, 6.47, 12.1, 0.55, t('学習済みポリシー（π0.5 / Diffusion Policy / GR00T …）', 'Pretrained policy (π0.5 / Diffusion Policy / GR00T …)'),
         fill=GRAY_F, line=GRAY_L, size=16)
 
 # ================================================================== 4, 5 papers
 papers_slide(None)
 papers_slide(0)
 
-# ================================================================== SimFoundry 6-14
+# ================================================================== SimFoundry 6-15
 s = content_slide(CAT1, 6, size=22)
 positioning(s, 0, [
-    (t('入力', 'Input'), t('実世界の動画1本 ＋ 評価・学習したいポリシー', 'One real-world video + the policy to evaluate or train')),
-    (t('VLM が書く', 'VLM writes'), t('物体のラベル、質量・摩擦、別の配置とタスクの提案', 'Object labels, mass and friction, proposals for new layouts and tasks')),
-    (t('使うのは', 'Used by'), t('シミュレータ（Sim の構築と、デモの自動生成）', 'The simulator (scene construction and automatic demo generation)')),
-    (t('ポリシー', 'Policy'), t('Sim の中で評価される／Sim のデータで学習される', 'Evaluated inside the sim / trained on sim data')),
+    (t('入力', 'Input'), t('実世界の動画1本と、評価または学習したいポリシー', 'One real-world video, plus the policy to evaluate or train')),
+    (t('VLM の役割', 'Role of the VLM'), t('物体の検出、質量・摩擦の推定、別の配置やタスクの提案', 'Detect objects, estimate mass and friction, propose layouts and tasks')),
+    (t('出力の使い道', 'Where the output goes'), t('シミュレータ。シーンの構築とデモの自動生成に使う', 'The simulator: scene construction and automatic demo generation')),
+    (t('ポリシーの扱い', 'What happens to the policy'), t('Sim の中で評価される、または Sim のデータで学習される', 'Evaluated inside the sim, or trained on sim data')),
 ])
 
 s = content_slide(CAT1, 7, size=22)
+add_picture(s, 'sf_fig1', 1.65, 3.3, w=10.0)
+caption(s, 1.65, 7.0, 8, 'Fig. 1 in Ranawaka et al., 2026')
+
+s = content_slide(CAT1, 8, size=20)
+add_picture(s, 'sf_tab1', 0.45, 3.45, w=7.4)
+caption(s, 0.45, 6.65, 7.4, 'Table 1 in Ranawaka et al., 2026')
+rows3 = [(t('構築', 'Construction'), t('手作業・半自動', 'manual / semi-automatic'), t('動画1本から全自動', 'fully automatic from one video')),
+         (t('出力', 'Output'), t('複製シーン1つ', 'one twin scene'), t('複製 ＋ 物体・配置・タスクの変種', 'twin + object / layout / task variants')),
+         (t('用途', 'Use'), t('評価か学習のどちらか', 'evaluation or training'), t('評価と学習の両方', 'both evaluation and training'))]
+add_box(s, 9.0, 3.45, 2.0, 0.45, t('既存の Real2Sim', 'Prior real-to-sim'), fill=GRAY_F, line=GRAY_L, size=13)
+add_box(s, 11.05, 3.45, 2.0, 0.45, 'SimFoundry', fill=BLUE_F, line=BLUE_L, size=13)
+for i, (k, a, b) in enumerate(rows3):
+    yy = 4.0 + i * 1.0
+    add_box(s, 8.0, yy, 0.95, 0.9, k, fill=GRAY_F, line=GRAY_L, size=13)
+    add_box(s, 9.0, yy, 2.0, 0.9, '', fill='FFFFFF', line='BFBFBF', lines=[('opt', [a], dict(size=12, bold=False, color='595959'))], margin=0.06)
+    add_box(s, 11.05, yy, 2.0, 0.9, '', fill='FFFFFF', line=BLUE_L, lines=[('opt', [b], dict(size=12, bold=True, color=NAVY))], margin=0.06)
+
+s = content_slide(CAT1, 9, size=20)
 step_row(s, [
-    dict(img='sf_ex_real', head=t('実シーン（動画）', 'Real scene (video)'), body=t('入力。写真は台所の例', 'Input. A kitchen example')),
-    dict(img='sf_ex_twin', head=t('複製（Digital Twin）', 'Copy (digital twin)'), body=t('忠実 → 評価に使える。学習データは1シーン分', 'Faithful → usable for evaluation; training data for one scene only')),
-    dict(img='sf_ex_cousin', head=t('変種（Digital Cousins）', 'Variants (digital cousins)'), body=t('物体・配置・タスクを変えて無限に生成 → 学習データ', 'Unlimited variants of objects, layouts, tasks → training data')),
-], y=3.45, h=3.2, x0=0.9, total_w=11.5, gap=0.6, head_fill=[(GRAY_F, GRAY_L), (BLUE_F, BLUE_L), (BLUE_F, BLUE_L)])
-add_text(s, 0.9, 6.75, 5.6, 0.3, [[(t('既存の Real2Sim はここまで', 'Prior real-to-sim stops here'), dict(bold=True, color=RED))]], size=13, align=PP_ALIGN.CENTER)
-add_text(s, 7.0, 6.75, 5.4, 0.3, [[(t('SimFoundry が足した部分', 'What SimFoundry adds'), dict(bold=True, color=RED))]], size=13, align=PP_ALIGN.CENTER)
-caption(s, 0.9, 7.05, 10, 'Images from Fig. 3 in Ranawaka et al., 2026')
-
-s = content_slide(CAT1, 8)
-add_picture(s, 'sf_fig1', 1.65, 3.1, w=10.0)
-caption(s, 1.65, 6.95, 8, 'Fig. 1 in Ranawaka et al., 2026')
-
-s = content_slide(CAT1, 9, size=22)
-h_, pos = video_row(s, [('sf_dining', t('家のダイニング：実世界 → 複製シーン', 'Dining room: real → reconstructed')), ('sf_toys', t('おもちゃの机：実世界 → 複製シーン', 'Toy table: real → reconstructed'))], 3.4, total_w=11.0, x0=1.15, gap=0.6)
-callouts(s, pos, 3.4 + h_ + 0.5, [t('前半が実世界、後半が Sim。瓶の形やへらの向きまで一致する', 'First half real, second half sim. Bottle shape and spatula pose match'),
-                                   t('小さな物（クッキー、にんじん）も個別のメッシュになる', 'Small items (cookie, carrot) become individual meshes')])
-caption(s, 0.5, 7.05, 12, 'Videos from github.com/NVlabs/SimFoundry (docs/gallery)')
-
-s = content_slide(CAT1, 10, size=20)
-step_row(s, [
-    dict(img='sf_s1_video', head=t('① フレーム → 点群', '① Frame → point cloud'), body=t('深度推定で机と物の位置が分かる', 'Depth gives the table and object positions')),
-    dict(img='sf_s2_masks', head=t('② 物体を1つずつ切り抜く', '② Cut out objects one by one'), body=t('VLM が名前を挙げ、SAM 3 で切り抜く', 'VLM names them, SAM 3 cuts them out')),
-    dict(img='sf_s3_props', head=t('③ 3D 化 ＋ 物性', '③ 3D mesh + properties'), body=t('切り抜き1枚からメッシュ。質量・摩擦は VLM', 'Mesh from one crop; mass and friction from the VLM')),
-    dict(img='sf_s4_scene', head=t('④ 物理 Sim に配置', '④ Place in the physics sim'), body=t('めり込みを解消して安定させ、書き出す', 'Resolve penetrations, stabilize, export')),
-], y=3.6, h=3.1)
+    dict(img='sf_s2_depth', head=t('① 深度 → 点群', '① Depth → point cloud'), body='Depth Anything 3, SAM 3'),
+    dict(img='sf_s2_masks', head=t('② 物体の切り抜き', '② Cut out each object'), body=t('Gemini 3 Pro で列挙、SAM 3 でマスク', 'Gemini 3 Pro lists, SAM 3 masks')),
+    dict(img='sf_s3_mesh', head=t('③ メッシュ化と姿勢合わせ', '③ Mesh + pose'), body='Hunyuan3D 2.1 / TRELLIS.2, FoundationPose'),
+    dict(img='sf_s4_scene', head=t('④ 物性と安定化', '④ Properties + stabilization'), body=t('CoACD, Gemini（質量・摩擦）, PyBullet → IsaacLab', 'CoACD, Gemini (mass, friction), PyBullet → IsaacLab')),
+], y=3.75, h=3.0)
 caption(s, 0.5, 6.95, 12, 'Images from Fig. 2 in Ranawaka et al., 2026')
 
-s = content_slide(CAT1, 11)
-add_picture(s, 'sf_fig2_bot', 0.5, 3.45, w=12.3)
-caption(s, 0.5, 6.85, 8, 'Fig. 2 (bottom) in Ranawaka et al., 2026')
+s = content_slide(CAT1, 10, size=20)
+add_picture(s, 'sf_fig2_bot', 0.5, 3.7, w=12.3)
+caption(s, 0.5, 7.1, 8, 'Fig. 2 (bottom) in Ranawaka et al., 2026')
+
+s = content_slide(CAT1, 11, size=20)
+add_picture(s, 'sf_tasks', 0.6, 3.7, h=3.2)
+add_box(s, 4.2, 3.7, 4.2, 1.5, '', fill=BLUE_F, line=BLUE_L, align=PP_ALIGN.LEFT,
+        lines=[('opt', [t('実機ポリシーの Sim 評価', 'Evaluating real policies in sim')], dict(size=15, bold=True)),
+               ('opt', [t('タスクごとに 25 ロールアウト。初期位置は 5×5 格子からサンプル。成功は 0 / 1', '25 rollouts per task; start positions from a 5×5 grid; success is 0 / 1')], dict(size=12, bold=False))])
+add_box(s, 8.7, 3.7, 4.3, 1.5, '', fill=BLUE_F, line=BLUE_L, align=PP_ALIGN.LEFT,
+        lines=[('opt', [t('指標', 'Metrics')], dict(size=15, bold=True)),
+               ('opt', [t('Pearson r：Sim と実機の成功率の相関。MMRV：Sim での順位が実機と食い違う度合い（0 が理想）', 'Pearson r: correlation of success rates. MMRV: how far sim rankings violate real rankings (0 is ideal)')], dict(size=12, bold=False))])
+add_box(s, 4.2, 5.4, 8.8, 1.5, '', fill=GREEN_F, line=GREEN_L, align=PP_ALIGN.LEFT,
+        lines=[('opt', [t('Sim で学習して実機へ', 'Training in sim for the real robot')], dict(size=15, bold=True)),
+               ('opt', [t('人のテレオペで 10〜15 デモ → MimicGen で軌道を増やし、材質とカメラ位置をランダム化 → DROID では π0 / π0.5 を微調整、YAM では Flow Matching ポリシーをゼロから学習 → Sim で最良のチェックポイントを選び実機へ', '10-15 teleoperated demos → MimicGen augmentation with material and camera randomization → fine-tune π0 / π0.5 on DROID, train a flow-matching policy from scratch on YAM → pick the best checkpoint in sim and deploy')], dict(size=12, bold=False))])
+caption(s, 0.6, 6.95, 4, 'Tasks: Fig. 4 in Ranawaka et al., 2026')
 
 s = content_slide(CAT1, 12)
 add_picture(s, 'sf_tasks', 1.4, 3.3, h=3.5)
@@ -581,46 +589,67 @@ callouts(s, pos, 3.45 + h_ + 0.5, [t('複製シーンの中で鍋をコンロへ
                                     t('学習にない黄色いボウルでも掴める', 'Grasps a yellow bowl never seen in training')])
 caption(s, 0.5, 7.05, 12, 'Videos from github.com/NVlabs/SimFoundry (docs/gallery): YAM simulated / real / unseen-object evaluation')
 
-# ================================================================== 15 papers (#2) + CaM 16-24
+s = content_slide(CAT1, 15, size=22)
+h_, pos = video_row(s, [('sf_dining', t('家のダイニング：実世界 → 複製シーン', 'Dining room: real → reconstructed')), ('sf_toys', t('おもちゃの机：実世界 → 複製シーン', 'Toy table: real → reconstructed'))], 3.5, total_w=10.0, x0=1.65, gap=0.6)
+callouts(s, pos, 3.5 + h_ + 0.5, [t('前半が実世界、後半が Sim。瓶の形やへらの向きまで一致する', 'First half real, second half sim. Bottle shape and spatula pose match'),
+                                   t('小さな物（クッキー、にんじん）も個別のメッシュになる', 'Small items (cookie, carrot) become individual meshes')])
+caption(s, 0.5, 7.05, 12, 'Videos from github.com/NVlabs/SimFoundry (docs/gallery)')
+
+# ================================================================== 16 papers (#2) + CaM 17-26
 papers_slide(1)
 
-s = content_slide(CAT2, 16, size=22)
+s = content_slide(CAT2, 17, size=22)
 positioning(s, 1, [
-    (t('入力', 'Input'), t('タスクの指示 ＋ 多視点のカメラ画像 ＋ 実行中のポリシー（開ループ可）', 'Task instruction + multi-view images + the running policy (open-loop is fine)')),
-    (t('VLM が書く', 'VLM writes'), t('守るべき条件の文章と、それを判定するコード', 'The conditions to keep, and code that checks them')),
-    (t('使うのは', 'Used by'), t('実行中の監視プロセス（点を追跡し、コードを毎フレーム実行）', 'A monitor running alongside (tracks points, runs the code every frame)')),
-    (t('ポリシー', 'Policy'), t('そのまま動く。違反したら止められ、再計画を受ける', 'Runs unchanged; stopped and re-planned on a violation')),
+    (t('入力', 'Input'), t('タスクの指示、多視点のカメラ画像、実行中のポリシー（開ループ可）', 'Task instruction, multi-view images, the running policy (open-loop is fine)')),
+    (t('VLM の役割', 'Role of the VLM'), t('守るべき条件を文章で書き、それを判定するコードを書く', 'Write the conditions to keep, and the code that checks them')),
+    (t('出力の使い道', 'Where the output goes'), t('実行中の監視プロセス。点を追跡し、コードを毎フレーム実行する', 'A monitor running alongside: tracks points, runs the code every frame')),
+    (t('ポリシーの扱い', 'What happens to the policy'), t('そのまま動く。条件を破ったら止められ、再計画を受ける', 'Runs unchanged; stopped and re-planned when a condition breaks')),
 ])
 
-s = content_slide(CAT2, 17, size=22)
-add_picture(s, f'cam_compare_{LANG}.png', 0.9, 3.5, w=11.5, folder=S + '/diag/')
-caption(s, 0.9, 6.85, 11, t('Inner Monologue と DoReMi は論文の比較手法', 'Inner Monologue and DoReMi are the baselines in the paper'))
+s = content_slide(CAT2, 18, size=22)
+add_picture(s, 'cam_fig1', 1.5, 3.45, w=10.3)
+caption(s, 1.5, 7.1, 8, 'Fig. 1 in Zhou et al., 2025')
 
-s = content_slide(CAT2, 18, size=20)
-step_row(s, [
-    dict(img='cam_s1_text', head=t('① 守る条件を文章で書く', '① Write the conditions'), body=t('実行中：鍋は水平、パンは鍋の中　完了時：鍋はコンロの真上', 'During: pan level, bread in pan.  Done: pan above the stove'), w=1.0),
-    dict(img='cam_s2_img_top', head=t('② 点・線・面にして描く', '② Draw as points, lines, surfaces'), body=t('鍋の面 = 赤い3点、パン = 緑、コンロ = 青。番号付きで画像に描く', 'Pan surface = 3 red points, bread = green, stove = blue; numbered on the image'), w=0.85),
-    dict(img='cam_s3_code', head=t('③ 点を使う判定コードを書く', '③ Write checking code over the points'), body=t('3点から法線を計算し、鉛直との角度が 15° を超えたら「水平でない」と返す', 'Normal from the 3 points; if the angle to vertical exceeds 15°, return "not level"'), w=1.55),
-], y=3.5, h=3.3, head_fill=[(ORANGE_F, ORANGE_L), (ORANGE_F, ORANGE_L), (ORANGE_F, ORANGE_L)])
-caption(s, 0.5, 7.0, 12, 'Images from Fig. 2 in Zhou et al., 2025')
+s = content_slide(CAT2, 19, size=22)
+add_picture(s, f'cam_compare_{LANG}.png', 0.9, 3.6, w=11.5, folder=S + '/diag/')
+caption(s, 0.9, 6.9, 11, t('Inner Monologue と DoReMi は論文の比較手法', 'Inner Monologue and DoReMi are the baselines in the paper'))
 
-s = content_slide(CAT2, 19)
-add_picture(s, 'cam_fig3', 0.5, 3.45, w=12.3)
-add_text(s, 0.6, 6.15, 1.4, 0.4, [[('ConSeg:', dict(bold=True))]], size=16, color=NAVY)
-add_eq(s, 'cam_seg', 2.0, 6.17, 7.4)
-caption(s, 9.6, 6.25, 3.5, 'Fig. 3, Eq. (2) in Zhou et al., 2025')
+s = content_slide(CAT2, 20, size=20)
+add_picture(s, 'cam_fig2', 0.5, 3.4, w=8.4)
+caption(s, 0.5, 7.2, 8, 'Fig. 2 in Zhou et al., 2025')
+add_box(s, 9.2, 3.5, 3.8, 1.1, '', fill=ORANGE_F, line=ORANGE_L, align=PP_ALIGN.LEFT,
+        lines=[('opt', [t('実行中に守る制約（事前予防）', 'During execution (proactive)')], dict(size=13, bold=True)),
+               ('opt', [t('取っ手を持ち続ける。パンは鍋の中。鍋は水平', 'keep the handle, bread in pan, pan level')], dict(size=12, bold=False))])
+add_box(s, 9.2, 4.7, 3.8, 1.1, '', fill=BLUE_F, line=BLUE_L, align=PP_ALIGN.LEFT,
+        lines=[('opt', [t('完了時に満たす制約（事後検知）', 'Upon completion (reactive)')], dict(size=13, bold=True)),
+               ('opt', [t('鍋がコンロの真上にある', 'the pan is directly above the stove')], dict(size=12, bold=False))])
+add_box(s, 9.2, 5.9, 3.8, 1.1, '', fill=GREEN_F, line=GREEN_L, align=PP_ALIGN.LEFT,
+        lines=[('opt', [t('違反したら', 'On a violation')], dict(size=13, bold=True)),
+               ('opt', [t('ポリシーを止め、理由（鍋が 25° 傾いた）を Generator に返して再計画', 'stop the policy, return the reason (pan tilted 25°) to the Generator, re-plan')], dict(size=12, bold=False))])
 
-s = content_slide(CAT2, 20)
-add_picture(s, 'cam_code', 0.5, 3.5, w=8.3)
+s = content_slide(CAT2, 21, size=20)
+add_picture(s, 'cam_fig3', 0.5, 3.6, w=12.3)
+add_text(s, 0.6, 6.3, 1.4, 0.4, [[('ConSeg:', dict(bold=True))]], size=16, color=NAVY)
+add_eq(s, 'cam_seg', 2.0, 6.32, 7.4)
+caption(s, 9.6, 6.4, 3.5, 'Fig. 3, Eq. (2) in Zhou et al., 2025')
+
+s = content_slide(CAT2, 22, size=20)
+add_picture(s, 'cam_code', 0.5, 3.7, w=8.3)
 flow = [(t('サブゴールの開始時に VLM を1回呼ぶ', 'Call the VLM once at the start of a subgoal'), ORANGE_F, ORANGE_L), (t('要素を追跡する（CoTracker）', 'Track the elements (CoTracker)'), BLUE_F, BLUE_L),
         (t('コードを毎フレーム評価する', 'Evaluate the code every frame'), GREEN_F, GREEN_L), (t('False なら停止し、理由を付けて再計画', 'On False: stop, return the reason, re-plan'), PINK_F, PINK_L)]
 for i, (txt_, f, l) in enumerate(flow):
-    add_box(s, 9.2, 3.5 + i * 0.85, 3.8, 0.6, txt_, fill=f, line=l, size=14)
+    add_box(s, 9.2, 3.7 + i * 0.8, 3.8, 0.58, txt_, fill=f, line=l, size=14)
     if i < len(flow) - 1:
-        add_arrow(s, 10.95, 3.5 + i * 0.85 + 0.6, 0.3, 0.25, shape=MSO_SHAPE.DOWN_ARROW, fill='BFBFBF', line='7F7F7F')
-caption(s, 0.5, 6.75, 8, 'Monitor code example from Fig. 2 in Zhou et al., 2025')
+        add_arrow(s, 10.95, 3.7 + i * 0.8 + 0.58, 0.3, 0.22, shape=MSO_SHAPE.DOWN_ARROW, fill='BFBFBF', line='7F7F7F')
+caption(s, 0.5, 6.95, 8, 'Monitor code example from Fig. 2 in Zhou et al., 2025')
 
-s = content_slide(CAT2, 21, size=22)
+s = content_slide(CAT2, 23)
+add_picture(s, 'cam_tab2', 0.5, 3.45, w=12.3)
+add_picture(s, 'cam_tab1', 0.5, 5.0, w=5.4)
+add_picture(s, 'cam_tab9', 6.3, 5.3, w=6.5)
+caption(s, 0.5, 6.85, 12, 'Table 1, 2, 9 in Zhou et al., 2025 (DRM: DoReMi, IM: Inner Monologue)')
+
+s = content_slide(CAT2, 24, size=22)
 h_, pos = video_row(s, [('cam_stack_ours', t('積み木積み：本手法', 'Stack in order: CaM')), ('cam_stack_doremi_cut', t('積み木積み：DoReMi', 'Stack in order: DoReMi')), ('cam_sweep', t('ブロックの半分だけ掃く', 'Sweep half the blocks')), ('cam_pour', t('お茶注ぎ（面の傾き）', 'Pour tea (surface tilt)'))], 3.4, gap=0.25)
 callouts(s, pos, 3.4 + h_ + 0.5, [t('積み木の位置を点で追跡。ずれたら積み直してから次へ', 'Block positions tracked as points; restacks after a shift'),
                                    t('VLM に毎回問うため、積めているのに失敗と誤判定してやり直す', 'Asks the VLM each time; misjudges a good stack and redoes it'),
@@ -628,85 +657,68 @@ callouts(s, pos, 3.4 + h_ + 0.5, [t('積み木の位置を点で追跡。ずれ�
                                    t('ポットの面の傾きを監視し、傾けすぎを止める', 'Watches the teapot surface; stops over-tilting')])
 caption(s, 0.5, 7.05, 12, 'Videos from zhoues.github.io/Code-as-Monitor (CLIPort / OmniGibson demos)')
 
-s = content_slide(CAT2, 22)
-add_picture(s, 'cam_tab2', 0.5, 3.45, w=12.3)
-add_picture(s, 'cam_tab1', 0.5, 5.0, w=5.4)
-add_picture(s, 'cam_tab9', 6.3, 5.3, w=6.5)
-caption(s, 0.5, 6.85, 12, 'Table 1, 2, 9 in Zhou et al., 2025 (DRM: DoReMi, IM: Inner Monologue)')
-
-s = content_slide(CAT2, 23, size=22)
-h_, pos = video_row(s, [('cam_real_clear_cut', t('動物以外を片付ける（2倍速）', 'Clear all objects except animals (2x)')), ('cam_real_grasp_cut', t('果物に近い順に動物を掴む', 'Grasp animals nearest to fruits first'))], 3.3, total_w=8.0, x0=2.65, gap=2.2, max_h=2.55)
-callouts(s, [(0.6, 5.9), (6.9, 5.9)], 3.3 + h_ + 0.5, [t('0:01 人がぬいぐるみとカップを動かす → 追跡点で目標を更新\n0:18 掴んだぬいぐるみを人が抜き取る → 検知して掴み直す', '0:01 a person moves the toy and cup → target updated from tracked points\n0:18 the toy is pulled from the hand → detected, re-grasped'),
-                                   t('0:03 人が馬を動かす → 牛が最も近くなり、目標が牛に変わる\n0:14 人が梨を動かす → 距離を再計算し、再び馬へ', '0:03 a person moves the horse → the cow is now nearest, target switches\n0:14 the pear is moved → distances recomputed, back to the horse')])
-caption(s, 0.5, 7.05, 12, 'Videos from zhoues.github.io/Code-as-Monitor (real-world demos, UR5 + Leap Hand), trimmed')
-
-s = content_slide(CAT2, 24)
+s = content_slide(CAT2, 25)
 add_picture(s, 'cam_fig5', 0.5, 3.45, w=12.3)
 add_picture(s, 'cam_tab4', 0.5, 5.75, w=5.2)
 add_picture(s, 'cam_tab6', 6.3, 5.75, w=5.0)
 add_text(s, 11.45, 5.8, 1.7, 1.0, [[(t('限界', 'Limits'), dict(bold=True))], [t('VLM の幻覚', 'VLM hallucination')], [t('力に関する失敗は捉えにくい', 'force-related failures are hard to catch')]], size=11, color=MUTED, spacing=100)
 caption(s, 0.5, 7.05, 12, 'Fig. 5, Table 4, Table 6 in Zhou et al., 2025')
 
-# ================================================================== 25 papers (#3) + VLS 26-34
+s = content_slide(CAT2, 26, size=22)
+h_, pos = video_row(s, [('cam_real_clear_cut', t('動物以外を片付ける（2倍速）', 'Clear all objects except animals (2x)')), ('cam_real_grasp_cut', t('果物に近い順に動物を掴む', 'Grasp animals nearest to fruits first'))], 3.3, total_w=8.0, x0=2.65, gap=2.2, max_h=2.55)
+callouts(s, [(0.6, 5.9), (6.9, 5.9)], 3.3 + h_ + 0.5, [t('0:01 人がぬいぐるみとカップを動かす → 追跡点で目標を更新\n0:18 掴んだぬいぐるみを人が抜き取る → 検知して掴み直す', '0:01 a person moves the toy and cup → target updated from tracked points\n0:18 the toy is pulled from the hand → detected, re-grasped'),
+                                                      t('0:03 人が馬を動かす → 牛が最も近くなり、目標が牛に変わる\n0:14 人が梨を動かす → 距離を再計算し、再び馬へ', '0:03 a person moves the horse → the cow is now nearest, target switches\n0:14 the pear is moved → distances recomputed, back to the horse')])
+caption(s, 0.5, 7.05, 12, 'Videos from zhoues.github.io/Code-as-Monitor (real-world demos, UR5 + Leap Hand), trimmed')
+
+# ================================================================== 27 papers (#3) + VLS 28-37
 papers_slide(2)
 
-s = content_slide(CAT3, 26, size=22)
+s = content_slide(CAT3, 28, size=22)
 positioning(s, 2, [
-    (t('入力', 'Input'), t('RGB-D 画像 ＋ 指示 ＋ 凍結した拡散／フローのポリシー', 'RGB-D images + instruction + a frozen diffusion / flow policy')),
-    (t('VLM が書く', 'VLM writes'), t('段階ごとの報酬関数（PyTorch の微分可能なコード）', 'A reward function per stage (differentiable PyTorch code)')),
-    (t('使うのは', 'Used by'), t('ポリシーのノイズ除去ループ（報酬の勾配を毎ステップ足す）', 'The policy\'s denoising loop (adds the reward gradient every step)')),
-    (t('ポリシー', 'Policy'), t('重みは変えない。生成の途中で行動が少しずつ曲げられる', 'Weights unchanged; actions are bent gradually during generation')),
+    (t('入力', 'Input'), t('RGB-D 画像と指示、凍結した拡散／フローマッチングのポリシー', 'RGB-D images and the instruction, plus a frozen diffusion / flow policy')),
+    (t('VLM の役割', 'Role of the VLM'), t('段階ごとの報酬関数を、微分可能な PyTorch のコードとして書く', 'Write a reward per stage as differentiable PyTorch code')),
+    (t('出力の使い道', 'Where the output goes'), t('ポリシーのノイズ除去ループ。各ステップで報酬の勾配を足す', 'The policy\'s denoising loop: the reward gradient is added every step')),
+    (t('ポリシーの扱い', 'What happens to the policy'), t('重みは変えない。生成の途中で行動が少しずつ曲げられる', 'Weights unchanged; the action is bent gradually during generation')),
 ])
 
-s = content_slide(CAT3, 27, size=22)
-add_picture(s, f'vls_compare_{LANG}.png', 0.8, 3.45, w=11.7, folder=S + '/diag/')
+s = content_slide(CAT3, 29, size=22)
+add_picture(s, 'vls_fig1', 2.55, 3.35, w=8.2)
+caption(s, 2.55, 7.15, 8, 'Fig. 1 in Liu et al., 2026')
 
-s = content_slide(CAT3, 28, size=20)
+s = content_slide(CAT3, 30, size=22)
+add_picture(s, f'vls_compare_{LANG}.png', 0.8, 3.65, w=11.7, folder=S + '/diag/')
+
+s = content_slide(CAT3, 31, size=20)
+add_picture(s, 'vls_fig2', 0.5, 3.45, w=7.6)
+caption(s, 0.5, 7.2, 8, 'Fig. 2 in Liu et al., 2026')
+add_box(s, 8.5, 3.5, 4.5, 1.1, '', fill=GREEN_F, line=GREEN_L, align=PP_ALIGN.LEFT,
+        lines=[('opt', [t('使うモデル', 'Models used')], dict(size=13, bold=True)),
+               ('opt', [t('キーポイント：SAM, DINOv2　報酬：GPT-4o 系の VLM　ベース：π0.5（LIBERO-PRO, 実機）, Diffusion Policy（CALVIN）', 'Keypoints: SAM, DINOv2.  Reward: GPT-4o-class VLM.  Base: π0.5 (LIBERO-PRO, real), Diffusion Policy (CALVIN)')], dict(size=12, bold=False))])
+add_box(s, 8.5, 4.7, 4.5, 1.1, '', fill=YELLOW_F, line=YELLOW_L, align=PP_ALIGN.LEFT,
+        lines=[('opt', [t('報酬関数の制約', 'Constraints on the reward')], dict(size=13, bold=True)),
+               ('opt', [t('距離・内積・ソフト制約など微分可能な torch 演算のみ。VLM 自体は計算グラフの外', 'Only differentiable torch ops (distances, dot products, soft constraints); the VLM stays off the graph')], dict(size=12, bold=False))])
+add_box(s, 8.5, 5.9, 4.5, 1.1, '', fill=GRAY_F, line=GRAY_L, align=PP_ALIGN.LEFT,
+        lines=[('opt', [t('段階の切り替え', 'Stage switching')], dict(size=13, bold=True)),
+               ('opt', [t('報酬が閾値を超えたら VLM が実行結果を見て次の段階の報酬を選ぶ', 'When the reward crosses a threshold, the VLM inspects the outcome and picks the next stage reward')], dict(size=12, bold=False))])
+
+s = content_slide(CAT3, 32, size=20)
+add_eq(s, 'vls_guid', 0.7, 3.55, 7.0)
+caption(s, 7.9, 3.6, 4.5, 'Eq. (5), (6), (7) in Liu et al., 2026', size=11)
+add_picture(s, 'vls_loop', 0.7, 4.15, w=11.9)
+for lab, eqn, x, w in [(t('候補を引き離す斥力（RBF）', 'Repulsion between candidates (RBF)'), 'vls_rbf', 0.7, 3.7), (t('報酬で重み付けした選別（FK）', 'Reward-weighted resampling (FK)'), 'vls_fk', 4.8, 4.0), (t('誘導の強さ λ の調整', 'Adaptive guidance strength λ'), 'vls_lam', 9.2, 3.4)]:
+    add_text(s, x, 5.95, w, 0.35, [lab], size=13, bold=True, color=NAVY)
+    add_eq(s, eqn, x, 6.3, w)
+caption(s, 0.7, 7.1, 12, 'Fig. 2 (bottom), Eq. (8)–(10) in Liu et al., 2026')
+
+s = content_slide(CAT3, 33, size=20)
 step_row(s, [
-    dict(img='vls_s1_kpset', head=t('① 3D の点を取り出す', '① Extract 3D keypoints'), body=t('VLM が物を挙げ、SAM と深度で点に。番号を振る（2 = かご）', 'VLM names objects; SAM + depth give numbered points (2 = basket)'), w=0.9),
-    dict(img='vls_s2_code', head=t('② VLM が報酬をコードで書く', '② VLM writes the reward as code'), body=t('軌道と点2の距離の二乗にマイナス。近いほど高得点、微分できる', 'Negative squared distance to point 2: closer is better, differentiable'), w=1.3),
-    dict(img='vls_s3_loop_only', head=t('③ 各ステップで勾配を足す', '③ Add the gradient every step'), body=t('ノイズから行動を作る途中で軌道がかご側へずれていく', 'While the action forms from noise, the trajectory shifts toward the basket'), w=1.5),
-], y=3.5, h=3.3, head_fill=[(GREEN_F, GREEN_L), (GREEN_F, GREEN_L), (GREEN_F, GREEN_L)])
-caption(s, 0.5, 7.0, 12, 'Images from Fig. 2 in Liu et al., 2026')
+    dict(img='vls_s1_kpset', head=t('① 3D の点を取り出す', '① Extract 3D keypoints'), body=t('かご = 点 2', 'basket = point 2'), w=0.9),
+    dict(img='vls_s2_code', head=t('② VLM が報酬をコードで書く', '② VLM writes the reward as code'), body=t('軌道と点 2 の距離の二乗にマイナス', 'negative squared distance to point 2'), w=1.3),
+    dict(img='vls_s3_loop_only', head=t('③ 各ステップで勾配を足す', '③ Add the gradient every step'), body=t('初期候補 → 斥力 → 補正 → 選別', 'init → repulsion → refine → resample'), w=1.5),
+], y=3.75, h=3.0, head_fill=[(GREEN_F, GREEN_L), (GREEN_F, GREEN_L), (GREEN_F, GREEN_L)])
+caption(s, 0.5, 7.05, 12, 'Images from Fig. 2 in Liu et al., 2026')
 
-s = content_slide(CAT3, 29)
-add_eq(s, 'vls_guid', 0.9, 3.4, 7.6)
-add_eq(s, 'vls_surr', 0.9, 4.0, 5.6)
-rows = [
-    (t('既存の誘導の手法', 'Existing steering methods'), t('誘導の信号', 'Guidance signal'), t('課題', 'Issue')),
-    ('V-GPS / VGD', t('学習済みの価値関数・Q', 'learned value / Q function'), t('批評家の好みにポリシーが引きずられる', 'policy is pulled toward the critic\'s preferences')),
-    ('DynaGuide / Latent Policy Barrier', t('学習済みのダイナミクスモデル', 'learned dynamics model'), t('モデルの誤差とロールアウトの計算コスト', 'model error and rollout cost')),
-    ('ITPS / FOREWARN / Do-What-You-Say', t('人間や VLM による候補の選択', 'selection of candidates by humans / VLMs'), t('信号が離散で疎なのでサンプル効率が悪い', 'discrete, sparse signal; sample-inefficient')),
-    (t('VLS（本論文）', 'VLS (this paper)'), t('VLM が書いた微分可能な報酬関数', 'differentiable reward written by a VLM'), t('訓練が要らず、勾配が密。推論コストが課題', 'training-free, dense gradients; inference cost is the issue')),
-]
-tbl = s.shapes.add_table(len(rows), 3, inch(0.9), inch(4.7), inch(11.6), inch(2.1)).table
-tbl.columns[0].width = inch(3.9); tbl.columns[1].width = inch(3.4); tbl.columns[2].width = inch(4.3)
-for i, row in enumerate(rows):
-    for j, val in enumerate(row):
-        c = tbl.cell(i, j)
-        c.text = ''
-        add_runs(c.text_frame.paragraphs[0], val, size=14, bold=(i == 0 or i == len(rows) - 1), color=('FFFFFF' if i == 0 else None))
-        c.margin_top = c.margin_bottom = inch(0.03)
-        c.fill.solid()
-        c.fill.fore_color.rgb = RGBColor.from_string(NAVY if i == 0 else (GREEN_F if i == len(rows) - 1 else ('F2F2F2' if i % 2 else 'FFFFFF')))
-caption(s, 8.7, 3.45, 4.5, 'Eq. (5), (6), (7) in Liu et al., 2026', size=11)
-
-s = content_slide(CAT3, 30)
-add_picture(s, 'vls_loop', 0.5, 3.4, w=12.3)
-for lab, eqn, x, w in [(t('候補を引き離す斥力（RBF）', 'Repulsion between candidates (RBF)'), 'vls_rbf', 0.5, 3.9), (t('報酬で重み付けした選別（FK）', 'Reward-weighted resampling (FK)'), 'vls_fk', 4.7, 4.2), (t('誘導の強さの調整', 'Adaptive guidance strength'), 'vls_lam', 9.2, 3.5)]:
-    add_text(s, x, 5.45, w, 0.35, [lab], size=14, bold=True, color=NAVY)
-    add_eq(s, eqn, x, 5.85, w)
-caption(s, 0.5, 7.0, 12, 'Fig. 2 (bottom), Eq. (8)–(10) in Liu et al., 2026')
-
-s = content_slide(CAT3, 31, size=22)
-h_, pos = video_row(s, [('vls_libero_base_cut', t('LIBERO-PRO：π0.5（失敗）', 'LIBERO-PRO: π0.5 (fail)')), ('vls_libero_vls', t('LIBERO-PRO：+VLS（成功）', 'LIBERO-PRO: +VLS (success)')), ('vls_coll_base_cut', t('壁を避ける：ベース（失敗）', 'Avoid the wall: base (fail)')), ('vls_coll_vls', t('壁を避ける：+VLS（成功）', 'Avoid the wall: +VLS (success)'))], 3.35, total_w=11.0, x0=1.15, gap=0.3)
-callouts(s, pos, 3.4 + h_ + 0.5, [t('学習時の位置へ向かい、空振りする', 'Reaches for the training-time spot and misses'),
-                                   t('数字付きの点が目標。報酬で補正される', 'Numbered points are the targets; corrected by reward'),
-                                   t('「壁を避けて」を知らず、壁にぶつかる', 'Does not know "avoid the wall"; hits it'),
-                                   t('壁から遠いほど高報酬 → 迂回する', 'Reward grows away from the wall → detours')])
-caption(s, 0.5, 7.05, 12, 'Videos from vision-language-steering.github.io (LIBERO-PRO position perturbation, collision avoidance), trimmed')
-
-s = content_slide(CAT3, 32)
+s = content_slide(CAT3, 34)
 add_picture(s, 'vls_tab1', 0.5, 3.5, w=7.4)
 add_picture(s, 'vls_fig3', 0.5, 5.1, w=7.4)
 add_picture(s, 'vls_abl', 8.2, 3.5, w=4.8)
@@ -714,54 +726,53 @@ add_picture(s, 'vls_scale', 8.2, 5.1, w=4.8)
 caption(s, 0.5, 6.95, 7, 'Table I, Fig. 3 in Liu et al., 2026')
 caption(s, 8.2, 6.5, 4.8, t('Fig. 4 in Liu et al., 2026（左：Ablation、右：サンプル数のスケーリング）', 'Fig. 4 in Liu et al., 2026 (left: ablation, right: scaling with the number of samples)'))
 
-s = content_slide(CAT3, 33, size=22)
+s = content_slide(CAT3, 35, size=22)
+h_, pos = video_row(s, [('vls_libero_base_cut', t('LIBERO-PRO：π0.5（失敗）', 'LIBERO-PRO: π0.5 (fail)')), ('vls_libero_vls', t('LIBERO-PRO：+VLS（成功）', 'LIBERO-PRO: +VLS (success)')), ('vls_coll_base_cut', t('壁を避ける：ベース（失敗）', 'Avoid the wall: base (fail)')), ('vls_coll_vls', t('壁を避ける：+VLS（成功）', 'Avoid the wall: +VLS (success)'))], 3.35, total_w=11.0, x0=1.15, gap=0.3)
+callouts(s, pos, 3.35 + h_ + 0.5, [t('学習時の位置へ向かい、空振りする', 'Reaches for the training-time spot and misses'),
+                                    t('数字付きの点が目標。報酬で補正される', 'Numbered points are the targets; corrected by reward'),
+                                    t('「壁を避けて」を知らず、壁にぶつかる', 'Does not know "avoid the wall"; hits it'),
+                                    t('壁から遠いほど高報酬 → 迂回する', 'Reward grows away from the wall → detours')])
+caption(s, 0.5, 7.05, 12, 'Videos from vision-language-steering.github.io (LIBERO-PRO position perturbation, collision avoidance), trimmed')
+
+s = content_slide(CAT3, 36)
+add_picture(s, 'vls_fig5', 0.5, 3.45, w=12.3)
+caption(s, 0.5, 7.0, 8, 'Fig. 5 in Liu et al., 2026')
+
+s = content_slide(CAT3, 37, size=22)
 h_, pos = video_row(s, [('vls_real_banana', t('同じ条件：バナナを緑の皿に', 'In-distribution: banana on green plate')), ('vls_real_mug', t('未知の物体：マグを皿に', 'Unseen object: mug on plate')), ('vls_real_pos', t('皿の位置を入れ替え', 'Plates swapped'))], 3.4, gap=0.3)
 callouts(s, pos, 3.4 + h_ + 0.5, [t('左上の Guide が誘導の有無、Sig_Str が強さ。仕上げで弱まる', 'Top-left: Guide on/off, Sig_Str = strength; it weakens near the end'),
                                    t('学習にないマグでも、点との距離で報酬が書けるので掴める', 'A mug never seen in training; distance-to-point rewards still work'),
                                    t('指示は同じ。皿の位置を点で取り直すだけで追従する', 'Same instruction; re-extracted plate points are enough to follow')])
 caption(s, 0.5, 7.05, 12, 'Videos from vision-language-steering.github.io (real-world Franka rollouts)')
 
-s = content_slide(CAT3, 34)
-add_picture(s, 'vls_fig5', 0.5, 3.45, w=12.3)
-caption(s, 0.5, 7.0, 8, 'Fig. 5 in Liu et al., 2026')
-
-# ================================================================== 35 side-by-side table
-s = content_slide('Insights', 35, size=20)
+# ================================================================== 38 summary (bullets + table)
+s = new_slide('Insights', slide_title(38))
+add_bullets(s, 38, size=18, spacing=120)
 hdr = ['', 'SimFoundry', 'Code-as-Monitor', 'VLS']
 rows = [
-    (t('領域', 'Area'), t('Real2Sim（配備前）', 'Real2Sim (before deployment)'), t('失敗検出（実行中）', 'Failure detection (during execution)'), t('推論時の誘導（生成中）', 'Steering (during generation)')),
-    (t('VLM が書く', 'VLM writes'), t('物体のラベル・物性、配置とタスクの提案', 'Object labels, properties, layout / task proposals'), t('制約文 ＋ 判定コード', 'Constraint sentences + checking code'), t('報酬関数のコード', 'Reward-function code')),
-    (t('使うのは', 'Used by'), t('シミュレータ', 'The simulator'), t('実行中の監視プロセス', 'A monitor running alongside'), t('ポリシーのノイズ除去ループ', 'The policy\'s denoising loop')),
-    (t('VLM を呼ぶ頻度', 'VLM call rate'), t('配備前のみ', 'Before deployment only'), t('サブゴールごとに1回', 'Once per subgoal'), t('段階の切り替えごと', 'At each stage switch')),
-    (t('実機の遅延', 'Real-robot latency'), t('なし', 'None'), t('小（追跡とコード実行のみ）', 'Small (tracking + code)'), t('約1秒／チャンク', 'About 1 s per chunk')),
+    (t('VLM の出力', 'VLM output'), t('物体の 3D モデルと物性、配置・タスクの提案', '3D objects with properties; layout / task proposals'), t('制約文と判定コード', 'Constraint sentences + checking code'), t('報酬関数のコード', 'Reward-function code')),
+    (t('入れ先', 'Enters at'), t('学習データ（配備前）', 'Training data (before deployment)'), t('実行を止める条件（実行中）', 'A stop condition (during execution)'), t('行動生成の目的関数（生成中）', 'The objective of generation (during generation)')),
+    (t('ポリシーへの影響', 'Effect on the policy'), t('学習データが増える。重みは学習で変わる', 'More training data; weights change by training'), t('重みは不変。失敗時に止めて再計画', 'Weights unchanged; stop and re-plan on failure'), t('重みは不変。生成される行動がその場で変わる', 'Weights unchanged; the generated action changes on the spot')),
+    (t('主な効果', 'Main effect'), t('Sim 評価 r = 0.91、変種で実機 +17〜40%', 'Sim eval r = 0.91; variants +17-40% real'), t('外乱下 +12 pt、長期タスク 0 → 90%', '+12 pt under disturbance; 0 → 90% long-horizon'), t('LIBERO-PRO +13 pt、実機 +19〜27 pt', 'LIBERO-PRO +13 pt; real +19-27 pt')),
+    (t('コスト', 'Cost'), t('再構成 約5分/物体。実行時は VLM 不要', '~5 min per object; no VLM at run time'), t('VLM はサブゴールごとに1回', 'One VLM call per subgoal'), t('約1秒/チャンク。VLM の誤りが行動に直結', '~1 s per chunk; VLM errors hit the action directly')),
 ]
-tbl = s.shapes.add_table(len(rows) + 1, 4, inch(0.6), inch(3.5), inch(12.1), inch(3.2)).table
+tbl = s.shapes.add_table(len(rows) + 1, 4, inch(0.6), inch(4.2), inch(12.1), inch(2.8)).table
 tbl.columns[0].width = inch(1.9); tbl.columns[1].width = inch(3.4); tbl.columns[2].width = inch(3.4); tbl.columns[3].width = inch(3.4)
 colf = [GRAY_F, BLUE_F, ORANGE_F, GREEN_F]
 for j, val in enumerate(hdr):
     c = tbl.cell(0, j); c.text = ''
-    add_runs(c.text_frame.paragraphs[0], val, size=15, bold=True, color=NAVY)
+    add_runs(c.text_frame.paragraphs[0], val, size=14, bold=True, color=NAVY)
+    c.margin_top = c.margin_bottom = inch(0.03)
     c.fill.solid(); c.fill.fore_color.rgb = RGBColor.from_string(colf[j])
 for i, row in enumerate(rows, start=1):
     for j, val in enumerate(row):
         c = tbl.cell(i, j); c.text = ''
-        add_runs(c.text_frame.paragraphs[0], val, size=13, bold=(j == 0))
+        add_runs(c.text_frame.paragraphs[0], val, size=12, bold=(j == 0))
         c.margin_top = c.margin_bottom = inch(0.04)
         c.fill.solid(); c.fill.fore_color.rgb = RGBColor.from_string('F2F2F2' if j == 0 else ('FFFFFF' if i % 2 else 'FAFAFA'))
 
-# ================================================================== 36 summary
-s = new_slide('Insights', slide_title(36))
-add_bullets(s, 36, size=20, spacing=130)
-boxes2 = [(0.9, BLUE_F, BLUE_L, '① Real2Sim', 'SimFoundry', t('VLM の空間理解で Sim を作る', 'Build sims with VLM spatial understanding')),
-          (5.0, ORANGE_F, ORANGE_L, t('② 失敗検出', '② Failure detection'), 'Code-as-Monitor', t('VLM が書いたコードで監視する', 'Monitor with VLM-written code')),
-          (9.1, GREEN_F, GREEN_L, t('③ 推論時の誘導', '③ Steering'), 'VLS', t('VLM が書いた報酬で誘導する', 'Steer with VLM-written rewards'))]
-for x, f, l, head, name, sub in boxes2:
-    add_box(s, x, 5.55, 3.4, 1.0, '', fill=f, line=l,
-            lines=[('opt', [head + '  ', (name, dict(color=NAVY))], dict(size=16, bold=True)), ('opt', [sub], dict(size=13, bold=False))])
-add_text(s, 0.9, 6.6, 11.6, 0.4, [[t('VLM が書く「幾何要素とコード」を、Sim の構築、実行の監視、生成の誘導に使う', 'Use VLM-written geometry and code for building sims, monitoring execution, and steering generation')]], size=14, color=NAVY, align=PP_ALIGN.CENTER)
-
-# ================================================================== 37 own work
-s = content_slide('Insights', 37, size=22)
+# ================================================================== 39 own work
+s = content_slide('Insights', 39, size=22)
 h_, pos = video_row(s, [('own_demo1', t('LIBERO-Goal：誘導 + 監視', 'LIBERO-Goal: steering + monitoring')), ('own_demo2', t('LIBERO-Object：誘導 + 監視', 'LIBERO-Object: steering + monitoring'))], 3.45, total_w=12.3, gap=0.4)
 caption(s, 0.5, 7.0, 12, 'Own preliminary experiments (LIBERO), 2026')
 
