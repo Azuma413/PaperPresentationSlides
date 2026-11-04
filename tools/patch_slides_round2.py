@@ -128,7 +128,7 @@ CITES = [
     ('DoReMi：VLM に画像で問い続ける比較手法', 'DoReMi [Guo+ 2023]：VLM に画像で問い続ける比較手法。Inner Monologue [Huang+ 2022]：サブゴール完了時だけ問う比較手法'),
     ('DoReMi (先行研究)', 'DoReMi [Guo+ 2023]'),
     ('DoReMi 0%', 'DoReMi [Guo+ 2023] 0%'),
-    ('LIBERO-PRO は指示・配置を学習時から変更。CALVIN は物体の位置が毎回変わる', 'LIBERO-PRO [Zhou+ 2025] と CALVIN [Mees+ 2022]。指示・配置・位置を学習時から変える'),
+    ('LIBERO-PRO は指示・配置を学習時から変更。CALVIN は物体の位置が毎回変わる', 'LIBERO-PRO [Zhou+ 2025] と CALVIN [Mees+ 2022]。学習時と条件を変えて評価'),
     ('DynaGuide や ITPS', 'DynaGuide [Du+ 2025] や ITPS [Wang+ 2024]'),
     ('動画は LIBERO での例', '動画は LIBERO [Liu+ 2023] での例'),
     # Digital Cousins
